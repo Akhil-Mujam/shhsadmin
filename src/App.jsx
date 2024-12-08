@@ -18,13 +18,14 @@ import ViewStudentAttendance from './Student/Components/ViewStudentAttendance'
 import ViewStudentAttendanceByTeacher from './Teacher/Component/ViewStudentAttendanceByCTeacher'
 import StudentMarks from './Student/Components/StudentMarks'
 
+
 const App = () => {
   return (
     <div>
       <BrowserRouter>
         <UserProvider>
           <Routes>
-            {/* Public Routes */}
+            {/* Public Routes  for all dev3elopment*/}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/logout" element={<Logout />} />
