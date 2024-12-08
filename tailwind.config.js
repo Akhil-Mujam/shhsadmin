@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   mode: "jit",
   content: [
     "./index.html",
@@ -17,5 +17,3 @@ module.exports = {
   },
   plugins: [],
 };
-
-
