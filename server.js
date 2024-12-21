@@ -1,16 +1,24 @@
-const { createServer } = require('http');
-const { parse } = require('url');
-const { join } = require('path');
-const serve = require('serve-handler');
+import { createServer } from 'http';
+import { parse } from 'url';
+import { join } from 'path';
+import { existsSync, readFileSync } from 'fs';
+import serve from 'serve-handler';
 
-const port = process.env.PORT || 3000; // Railway dynamically assigns the PORT environment variable.
+const port = process.env.PORT || 3000;
 
 const server = createServer((req, res) => {
   const parsedUrl = parse(req.url, true);
-  const options = {
-    public: join(__dirname, 'dist'), // Serve the `dist` folder
-  };
-  serve(req, res, options);
+  const publicPath = join(process.cwd(), 'dist');
+  const filePath = join(publicPath, parsedUrl.pathname);
+
+  if (existsSync(filePath) && parsedUrl.pathname !== '/') {
+    // Serve the static file if it exists
+    serve(req, res, { public: publicPath });
+  } else {
+    // Serve index.html for React Router routes
+    res.setHeader('Content-Type', 'text/html');
+    res.end(readFileSync(join(publicPath, 'index.html')));
+  }
 });
 
 server.listen(port, () => {
