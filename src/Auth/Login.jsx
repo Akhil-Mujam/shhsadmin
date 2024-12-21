@@ -58,43 +58,50 @@ const LoginPage = () => {
   //   }
   // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    try {
-      const response = await axiosInstance.put("/userauthdata/version/authenticate", {
-        username,
-        password,
-      });
-  
-      if (response.status === 200) {
-        const roles = response.data; // Assuming roles is an array
-        const rolePriority = ["Admin", "ClassTeacher", "Teacher", "Student"];
-        const role = roles.find((r) => rolePriority.includes(r));
-  
-        if (role) {
-          setRole(role); // Update role in UserContext
-          console.log("Role set:", role);
-  
-          // Define default redirections for roles
-          const roleRedirects = {
-            Admin: "/student-details",
-            ClassTeacher: "/view-attendance",
-            Teacher: "/view-attendance",
-            Student: "/Student-Marks",
-          };
-  
-          // Redirect to `state.from` or role's default route
-          navigate(location.state?.from?.pathname || roleRedirects[role], { replace: true });
-        } else {
-          alert("No valid role assigned.");
-        }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await axiosInstance.put("/userauthdata/version/authenticate", {
+      username,
+      password,
+    });
+
+    if (response.status === 200) {
+      console.log("Authentication successful");
+
+      // Fetch the user role after successful authentication
+      const rolesResponse = await axiosInstance.get("/userauthdata/getUserRole");
+      const roles = rolesResponse.data; // Assuming roles is an array
+      const rolePriority = ["Admin", "ClassTeacher", "Teacher", "Student"];
+      const role = roles.find((r) => rolePriority.includes(r));
+
+      if (role) {
+        setRole(role); // Update role in UserContext
+        console.log("Role set:", role);
+
+        // Define default redirections for roles
+        const roleRedirects = {
+          Admin: "/student-details",
+          ClassTeacher: "/view-attendance",
+          Teacher: "/view-attendance",
+          Student: "/Student-Marks",
+        };
+
+        // Redirect to `state.from` or role's default route
+        navigate(location.state?.from?.pathname || roleRedirects[role], { replace: true });
+      } else {
+        alert("No valid role assigned.");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+    } else {
+      alert("Authentication failed.");
     }
-  };
+  } catch (error) {
+    console.error("Login failed:", error);
+    alert("Login failed. Please check your credentials.");
+  }
+};
+
   
   return (
     <div className="flex flex-col lg:flex-row h-screen">

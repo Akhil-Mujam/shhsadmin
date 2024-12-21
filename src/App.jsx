@@ -77,7 +77,7 @@ const App = () => {
               <Route
                 path="attendance-upload"
                 element={
-                  <ProtectedRoute requiredRole="ClassTeacher">
+                  <ProtectedRoute requiredRole="Teacher">
                     <AttendanceUpload />
                   </ProtectedRoute>
                 }
@@ -85,7 +85,7 @@ const App = () => {
               <Route
                 path="marks-upload"
                 element={
-                  <ProtectedRoute requiredRole="ClassTeacher">
+                  <ProtectedRoute requiredRole="Teacher">
                     <MarksUpload />
                   </ProtectedRoute>
                 }
@@ -93,7 +93,7 @@ const App = () => {
               <Route
                 path="view-marks"
                 element={
-                  <ProtectedRoute requiredRole="ClassTeacher">
+                  <ProtectedRoute requiredRole="Teacher">
                     <ViewMarks />
                   </ProtectedRoute>
                 }
@@ -101,7 +101,7 @@ const App = () => {
               <Route
                 path="view-attendance"
                 element={
-                  <ProtectedRoute requiredRole="ClassTeacher">
+                  <ProtectedRoute requiredRole="Teacher">
                     <ViewAttendance />
                   </ProtectedRoute>
                 }
@@ -109,7 +109,7 @@ const App = () => {
               <Route
                 path="view-CT-attendance"
                 element={
-                  <ProtectedRoute requiredRole="ClassTeacher">
+                  <ProtectedRoute requiredRole="Teacher">
                     <ViewStudentAttendanceByTeacher/>
                   </ProtectedRoute>
                 }
