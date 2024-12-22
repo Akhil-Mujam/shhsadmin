@@ -1,16 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
-const CommonModal = ({ isVisible, onClose, onSubmit, fields, title, initialData, defaultRole }) => {
+const CommonModal = ({ 
+  isVisible, 
+  onClose, 
+  onSubmit, 
+  onDelete, 
+  fields, 
+  title, 
+  initialData, 
+  defaultRole 
+}) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    // Populate form data if editing
     if (initialData) {
-      setFormData({ ...initialData, role: initialData.role || defaultRole }); // Ensure role is set
+      // Populate form data with the initialData for editing
+      setFormData({ ...initialData });
     } else {
-      setFormData({ role: defaultRole }); // Default to provided role
+      // Set default values for new entries
+      const defaultData = { role: defaultRole };
+      fields.forEach((field) => {
+        defaultData[field.key] = field.default || ''; // Use default values if provided
+      });
+      setFormData(defaultData);
     }
-  }, [initialData, defaultRole]);
+  }, [initialData, defaultRole, fields]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,7 +32,7 @@ const CommonModal = ({ isVisible, onClose, onSubmit, fields, title, initialData,
   };
 
   const handleSubmit = () => {
-    onSubmit(formData); // Pass form data to parent component
+    onSubmit(formData);
   };
 
   if (!isVisible) return null;
@@ -28,7 +42,7 @@ const CommonModal = ({ isVisible, onClose, onSubmit, fields, title, initialData,
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
         <h2 className="text-xl font-semibold mb-4 text-center">{title}</h2>
         {fields.map((field) => (
-          <div key={field.key} className="mb-2">
+          <div key={field.key} className="mb-4">
             <input
               type="text"
               name={field.key}
@@ -36,21 +50,19 @@ const CommonModal = ({ isVisible, onClose, onSubmit, fields, title, initialData,
               onChange={handleChange}
               placeholder={field.label}
               className="p-2 border border-gray-300 rounded-lg w-full"
+              disabled={field.disabled} // Non-editable fields
             />
           </div>
         ))}
-        {/* Role Field (Non-editable) */}
-        <div className="mb-2">
-          <label className="block text-sm font-semibold mb-1">Role</label>
-          <input
-            type="text"
-            name="role"
-            value={formData.role || defaultRole}
-            disabled
-            className="p-2 border border-gray-300 rounded-lg w-full bg-gray-100"
-          />
-        </div>
         <div className="flex justify-end mt-4">
+          {title.includes('Edit') && (
+            <button
+              onClick={() => onDelete(formData.regNo)}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2"
+            >
+              Delete
+            </button>
+          )}
           <button
             onClick={handleSubmit}
             className="px-4 py-2 bg-green-500 text-white rounded-lg"

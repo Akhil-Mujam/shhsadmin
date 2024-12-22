@@ -16,11 +16,17 @@ const SideBar = ({ isSidebarOpen, toggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await axiosInstance.post("/userauthdata/logout").then((response) => {
-      console.log(response.data);
-    });
-    navigate("/login");
+ const handleLogout = async () => {
+    try {
+      // Clear user session
+      await axiosInstance.post("/userauthdata/logout");
+      
+      
+      // Redirect to external URL
+      window.location.href = "https://shhsgdk.in/";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   const menusByRole = {
@@ -30,8 +36,8 @@ const SideBar = ({ isSidebarOpen, toggleSidebar }) => {
       { title: "Circular", icon: <FaFolder />, path: "/circular" },
       { title: "Students", icon: <FaUserCircle />, path: "/student-details" },
       { title: "Teacher Details", icon: <FaUserCircle />, path: "/teacher-details" },
-      { title: "Analytics", icon: <FaChartBar />, path: "/analytics" },
-      { title: "Attendance", icon: <FaFolder />, path: "/attendance-upload" },
+      // { title: "Analytics", icon: <FaChartBar />, path: "/analytics" },
+      { title: "Attendance", icon: <FaFolder />, path: "/view-attendance" },
       { title: "Notifications", icon: <FaCog />, path: "/notifications" },
     ],
     ClassTeacher: [

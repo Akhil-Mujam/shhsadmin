@@ -17,6 +17,7 @@ import ViewAttendance from './Teacher/Component/ViewAttendance'
 import ViewStudentAttendance from './Student/Components/ViewStudentAttendance'
 import ViewStudentAttendanceByTeacher from './Teacher/Component/ViewStudentAttendanceByCTeacher'
 import StudentMarks from './Student/Components/StudentMarks'
+import DashBoard from './Admin/Components/DashBoard'
 
 
 const App = () => {
@@ -49,6 +50,22 @@ const App = () => {
                 }
               />
               <Route
+                path="dashboard"
+                element={
+                  <ProtectedRoute requiredRole={["Admin"]}>
+                   <DashBoard/>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="events"
+                element={
+                  <ProtectedRoute requiredRole={["Admin"]}>
+                   <DashBoard/>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="student-details"
                 element={
                   <ProtectedRoute requiredRole="Admin">
@@ -77,7 +94,7 @@ const App = () => {
               <Route
                 path="attendance-upload"
                 element={
-                  <ProtectedRoute requiredRole="Teacher">
+                  <ProtectedRoute  requiredRole={["Teacher", "ClassTeacher"]}>
                     <AttendanceUpload />
                   </ProtectedRoute>
                 }
@@ -85,7 +102,7 @@ const App = () => {
               <Route
                 path="marks-upload"
                 element={
-                  <ProtectedRoute requiredRole="Teacher">
+                  <ProtectedRoute requiredRole={["Teacher", "ClassTeacher"]}>
                     <MarksUpload />
                   </ProtectedRoute>
                 }
@@ -93,7 +110,7 @@ const App = () => {
               <Route
                 path="view-marks"
                 element={
-                  <ProtectedRoute requiredRole="Teacher">
+                  <ProtectedRoute requiredRole={["Teacher", "ClassTeacher"]}>
                     <ViewMarks />
                   </ProtectedRoute>
                 }
@@ -101,7 +118,7 @@ const App = () => {
               <Route
                 path="view-attendance"
                 element={
-                  <ProtectedRoute requiredRole="Teacher">
+                  <ProtectedRoute requiredRole={["Admin", "Teacher"]}>
                     <ViewAttendance />
                   </ProtectedRoute>
                 }
@@ -109,7 +126,7 @@ const App = () => {
               <Route
                 path="view-CT-attendance"
                 element={
-                  <ProtectedRoute requiredRole="Teacher">
+                  <ProtectedRoute requiredRole={["Teacher", "ClassTeacher"]}>
                     <ViewStudentAttendanceByTeacher/>
                   </ProtectedRoute>
                 }

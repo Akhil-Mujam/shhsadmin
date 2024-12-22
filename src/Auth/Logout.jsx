@@ -7,16 +7,17 @@ const Logout = () => {
   const { setRole } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleLogout = async() => {
-    // Clear user session
-   
-   await axiosInstance.post("/userauthdata/logout").then((response) =>{
-        console.log(response.data)
-        setRole(null);
-    })
-    
-    // Redirect to login
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      // Clear user session
+      await axiosInstance.post("/userauthdata/logout");
+      setRole(null);
+      
+      // Redirect to external URL
+      window.location.href = "https://shhsgdk.in/";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

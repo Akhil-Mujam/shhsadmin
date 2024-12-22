@@ -107,7 +107,8 @@ const TeacherTable = ({ data, fields, onMakeClassTeacher, onRemoveClassTeacher }
   };
 
   const handleAdd = () => {
-    setModalData(null); // No initial data for adding
+    setModalData({role: 'Teacher'}); // No initial data for adding
+    
     setModalTitle('Add Teacher');
     setIsModalVisible(true);
   };

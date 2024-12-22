@@ -36,6 +36,7 @@ const fields = [
   { key: 'password', label: 'Password' },
   { key: 'address', label: 'Address' },
   { key: 'phno', label: 'Phone' },
+  { key: 'role', label: 'Role', disabled: true }, // Default role
 ];
 
 const TeacherDetails = () => {
@@ -94,7 +95,7 @@ const TeacherDetails = () => {
           />
 
           {/* Pagination Controls */}
-          {/* <div className="flex justify-center items-center mt-4">
+          <div className="flex justify-center items-center mt-4">
             <button
               className="px-4 py-2 bg-gray-200 rounded-l disabled:opacity-50"
               onClick={() => handlePageChange(currentPage - 1)}
@@ -112,7 +113,7 @@ const TeacherDetails = () => {
             >
               Next
             </button>
-          </div> */}
+          </div>
         </>
       )}
     </div>

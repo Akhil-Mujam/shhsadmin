@@ -98,7 +98,7 @@ const Circular = () => {
                   <td className="py-2 px-4 text-gray-800">{circular.title}</td>
                   <td className="py-2 px-4 text-blue-500 underline">
                     <a href={circular.driveLink} target="_blank" rel="noopener noreferrer">
-                      {circular.driveLink}
+                     View Circular
                     </a>
                   </td>
                   <td className="py-2 px-4 text-center">
