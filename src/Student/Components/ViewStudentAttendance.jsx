@@ -108,14 +108,20 @@ const ViewStudentAttendance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {attendanceData.attendanceDetails.map((record, index) => (
-                    <tr key={index} className="border-b hover:bg-blue-50">
+                {attendanceData.attendanceDetails.map((record, index) => (
+                    <tr
+                      key={index}
+                      className={`border-b hover:bg-blue-50 ${
+                        record.status ? 'bg-green-100' : 'bg-red-100'
+                      }`}
+                    >
                       <td className="px-4 py-2 text-center">{record.attendanceDate}</td>
-                      <td className="px-4 py-2 text-center">
+                      <td className="px-4 py-2 text-center font-bold">
                         {record.status ? "Present" : "Absent"}
                       </td>
                     </tr>
                   ))}
+
                 </tbody>
               </table>
             </div>

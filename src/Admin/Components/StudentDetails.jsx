@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const StudentDetails = () => {
   const [students, setStudents] = useState([]);
-  const [className, setClassName] = useState('X');
+  const [className, setClassName] = useState('10');
   const [classSection, setClassSection] = useState('A');
   const [page, setPage] = useState(0);
   const [size] = useState(10);
@@ -26,7 +26,7 @@ const StudentDetails = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalData, setModalData] = useState(null);
-
+  const [currentPage, setCurrentPage] = useState(0); // Pagination: current page index (starts at 0)
   const columnHelper = createColumnHelper();
   const fields = [
     { key: 'regNo', label: 'Reg No' },
@@ -49,24 +49,47 @@ const StudentDetails = () => {
         sortingFn: 'basic',
       })
     );
-
+  
     baseColumns.push(
       columnHelper.display({
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-          <button
-            onClick={() => handleEdit(row.original)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Edit
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleEdit(row.original)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(row.original.regNo)}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
         ),
       })
     );
-
+  
     return baseColumns;
   }, [fields]);
+
+  const handleDelete = async (regNo) => {
+    if (!window.confirm(`Are you sure you want to delete student with Reg No: ${regNo}?`)) {
+      return;
+    }
+  
+    try {
+      const response = await axiosInstance.delete(`/student/delete/${regNo}`);
+      toast.success(response.data || 'Student deleted successfully.');
+      fetchStudents(); // Refresh the table data after deletion
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      toast.error('Failed to delete student.');
+    }
+  };
 
   const table = useReactTable({
     data: students,
@@ -80,24 +103,30 @@ const StudentDetails = () => {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const fetchStudents = async () => {
+  const fetchStudents = async (page) => {
     try {
-      const response = await axiosInstance.get(
-        `/student/pagination/getClassStudents/${className}/${classSection}`,
-        { params: { page, size } }
-      );
-      setStudents(response.data || []);
-      console.log(students)
+      const response = await axiosInstance.get(`/student/students/all`, {
+        params: {
+          className,      // Query parameter for className
+          classSection,   // Query parameter for classSection
+          page,           // Query parameter for pagination
+          size            // Query parameter for pagination
+        }
+      });
+  
+      setStudents(response.data.content || []); // Assuming paginated data has a 'content' field
+      console.log(students);
       setTotalPages(response.data.totalPages || 0);
+      console.log(totalPages)
     } catch (error) {
       console.error('Error fetching students:', error);
       toast.error('Failed to fetch student data.');
     }
   };
-
+  
   useEffect(() => {
-    fetchStudents();
-  }, [page, className, classSection]);
+    fetchStudents(currentPage);
+  }, [currentPage,page, className, classSection]);
 
   const handleFilterChange = (e) => {
     setGlobalFilter(e.target.value);
@@ -155,6 +184,11 @@ const StudentDetails = () => {
     }
   };
   
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -231,7 +265,7 @@ const StudentDetails = () => {
       </table>
 
       <div className="flex items-center justify-between mt-4">
-        <button
+        {/* <button
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
           className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md"
@@ -250,7 +284,30 @@ const StudentDetails = () => {
           className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md"
         >
           Next
-        </button>
+        </button> */}
+
+         {/* Additional Pagination Buttons */}
+  {/* Pagination Controls */}
+  <div className="flex items-center justify-between mt-4">
+            <button
+              className="px-4 py-2 bg-gray-200 rounded-l disabled:opacity-50"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 0}
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {currentPage + 1} of {totalPages}
+            </span>
+            <button
+              className="px-4 py-2 bg-gray-200 rounded-r disabled:opacity-50"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage + 1 === totalPages}
+            >
+              Next
+            </button>
+          </div>
+  
       </div>
 
       <CommonModal

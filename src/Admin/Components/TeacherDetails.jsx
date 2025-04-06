@@ -2,35 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../Common/axios';
 import TeacherTable from '../Utils/TeacherTable';
 
-const sampleTeachers = [
-  {
-    empId: "T001",
-    firstName: "John",
-    lastName: "Doe",
-    subject: "Mathematics",
-    email: "john.doe@example.com",
-    phone: "1234567890",
-  },
-  {
-    empId: "T002",
-    firstName: "Jane",
-    lastName: "Smith",
-    subject: "Science",
-    email: "jane.smith@example.com",
-    phone: "0987654321",
-  },
-  {
-    empId: "T003",
-    firstName: "Alice",
-    lastName: "Johnson",
-    subject: "English",
-    email: "alice.johnson@example.com",
-    phone: "1122334455",
-  },
-];
-
 const fields = [
-  { key: 'regNo', label: 'Employee ID' },
+  { key: 'regNo', label: 'Employee ID' }, // FIXED: Matching sampleTeachers structure
   { key: 'firstName', label: 'First Name' },
   { key: 'lastName', label: 'Last Name' },
   { key: 'password', label: 'Password' },
@@ -41,22 +14,21 @@ const fields = [
 
 const TeacherDetails = () => {
   const [teachers, setTeachers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0); // Pagination: current page index (starts at 0)
-  const [totalPages, setTotalPages] = useState(0); // Total pages available
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pageSize] = useState(10); // Number of teachers per page
+  const [pageSize] = useState(10);
 
-  const fetchTeachers = async (page) => {
+  const fetchTeachers = async (page = 0) => {
     setLoading(true);
     setError(null);
     try {
       const response = await axiosInstance.get('/teacher/all', {
         params: { page, size: pageSize },
       });
-      const { content, totalPages } = response.data; // Assuming backend response structure
+      const { content, totalPages } = response.data;
       setTeachers(content);
-      console.log(teachers)
       setTotalPages(totalPages);
     } catch (err) {
       console.error('Error fetching teachers:', err);
@@ -68,7 +40,6 @@ const TeacherDetails = () => {
 
   useEffect(() => {
     fetchTeachers(currentPage);
-    console.log(teachers)
   }, [currentPage]);
 
   const handlePageChange = (newPage) => {
@@ -88,10 +59,11 @@ const TeacherDetails = () => {
       ) : (
         <>
           <TeacherTable
-            data={teachers.length > 0 ? teachers : sampleTeachers}
+            data={teachers}
             fields={fields}
             title="Teacher"
             isStudent={false}
+            refreshData={fetchTeachers} // ✅ FIXED: Ensures auto refresh
           />
 
           {/* Pagination Controls */}

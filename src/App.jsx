@@ -18,6 +18,8 @@ import ViewStudentAttendance from './Student/Components/ViewStudentAttendance'
 import ViewStudentAttendanceByTeacher from './Teacher/Component/ViewStudentAttendanceByCTeacher'
 import StudentMarks from './Student/Components/StudentMarks'
 import DashBoard from './Admin/Components/DashBoard'
+import FeeDetails from './Admin/Components/FeeDetails'
+import AdminUploadAttendance from './Admin/Components/AdminUploadAttendance'
 
 
 const App = () => {
@@ -73,11 +75,27 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+               <Route
+                path="admin-attendance-upload-details"
+                element={
+                  <ProtectedRoute requiredRole="Admin">
+                    <AdminUploadAttendance/>
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="teacher-details"
                 element={
                   <ProtectedRoute requiredRole="Admin">
                     <TeacherDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="fee-details"
+                element={
+                  <ProtectedRoute requiredRole="Admin">
+                    <FeeDetails/>
                   </ProtectedRoute>
                 }
               />

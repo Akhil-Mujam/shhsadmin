@@ -3,43 +3,18 @@ import axiosInstance from '../../Common/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const AttendanceUpload = () => {
-  const [students, setStudents] = useState([]); // Array to hold student objects
-  const [attendance, setAttendance] = useState({}); // Object to track attendance
-  const [loading, setLoading] = useState(false); // Loading state
-  const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
-  const [studentsPerPage] = useState(10); // Number of students to display per page
-  const [attendanceStatus, setAttendanceStatus] = useState(false); // Track the status of today's attendance
-  const [classId, setClassId] = useState(null);
-  const [classSection, setClassSection] = useState(null);
-  const currentDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
+const AdminUploadAttendance = () => {
+    const [students, setStudents] = useState([]); // Array to hold student objects
+    const [attendance, setAttendance] = useState({}); // Object to track attendance
+    const [loading, setLoading] = useState(false); // Loading state
+    const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
+    const [studentsPerPage] = useState(10); // Number of students to display per page
+    const [attendanceStatus, setAttendanceStatus] = useState(false); // Track the status of today's attendance
+    const [classId, setClassId] = useState('10');
+    const [classSection, setClassSection] = useState('A');
+    const currentDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
 
-  // Fetch the class and section when the component mounts
-  useEffect(() => {
-    const getSectionandClass = async () => {
-      try {
-        const usernameresponse = await axiosInstance.get('/userauthdata/getUsername');
-        const username = usernameresponse.data;
-        console.log("getSection username = " + username);
-
-        const response = await axiosInstance.get(`/teacher/class-details/${username}`);
-        if (response.status === 200) {
-          console.log("classes: " + JSON.stringify(response.data));
-          setClassId(response.data.className);
-          setClassSection(response.data.classSection);
-        } else {
-          console.warn("Unexpected response status:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching class and section:", error);
-        toast.error("Error fetching class and section details. Please check your connection and try again.");
-      }
-    };
-
-    getSectionandClass();
-  }, []);
-
-  // Fetch students when classId and classSection are set
+    // Fetch students when classId and classSection are set
   useEffect(() => {
     if (!classId || !classSection) return; // Ensure classId and classSection are available
 
@@ -66,7 +41,6 @@ const AttendanceUpload = () => {
     fetchStudents();
   }, [classId, classSection]); // Runs only when classId and classSection are set
 
-  // Check if today's attendance has already been submitted
   useEffect(() => {
     if (!classId || !classSection) return; // Ensure classId and classSection are available
 
@@ -155,6 +129,34 @@ const AttendanceUpload = () => {
   const totalPages = Math.ceil(students.length / studentsPerPage);
 
   return (
+    <div  className="p-6">
+ <div className="flex gap-4 mb-4">
+        <select
+          value={classId}
+          onChange={(e) => setClassId(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg w-1/4"
+        >
+          {["Nursery", "LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => (i + 1).toString())].map(
+            (option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            )
+          )}
+        </select>
+        <select
+          value={classSection}
+          onChange={(e) => setClassSection(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg w-1/4"
+        >
+          {["A", "B", "C"].map((section) => (
+            <option key={section} value={section}>
+              {section}
+            </option>
+          ))}
+        </select>
+      </div>
+    
     <div className="max-w-4xl mx-auto mt-10 p-6  rounded-xl shadow-xl">
       <div className="bg-white p-8 rounded-lg shadow-lg">
         <form onSubmit={attendanceStatus ? handleUpdate : handleSubmit} className="space-y-6">
@@ -236,7 +238,7 @@ const AttendanceUpload = () => {
         </form>
       </div>
     </div>
+    </div>
   );
 };
-
-export default AttendanceUpload;
+export default AdminUploadAttendance

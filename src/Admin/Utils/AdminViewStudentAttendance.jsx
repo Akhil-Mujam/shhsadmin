@@ -3,7 +3,6 @@ import axiosInstance from "../../Common/axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Utility: Get today's date in YYYY-MM-DD format
 const getTodayDate = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -12,54 +11,24 @@ const getTodayDate = () => {
   return `${year}-${month}-${day}`;
 };
 
-const ViewStudentAttendanceByTeacher = () => {
-  const [classDetails, setClassDetails] = useState({ classId: null, classSection: null });
+const AdminViewStudentAttendance = () => {
+  const [classId, setClassId] = useState("10");
+  const [classSection, setClassSection] = useState("A");
   const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [date, setDate] = useState(getTodayDate); // Initialize with today's date
+  const [date, setDate] = useState(getTodayDate()); // Initialize with today's date
   const [loading, setLoading] = useState(false);
 
-  // Fetch class and section details on mount
+  // Fetch attendance records when classId, classSection, or date changes
   useEffect(() => {
-    const fetchClassDetails = async () => {
-      try {
-        const { data: username } = await axiosInstance.get("/userauthdata/getUsername");
-        console.log("Username:", username);
-
-        const { data, status } = await axiosInstance.get(`/teacher/class-details/${username}`);
-        if (status === 200) {
-          console.log("Class Details:", data);
-          setClassDetails({ classId: data.className, classSection: data.classSection });
-        } else {
-          console.warn("Unexpected response:", status);
-        }
-      } catch (error) {
-        console.error("Error fetching class details:", error);
-        toast.error("Error fetching class details. Please try again.");
-      }
-    };
-
-    fetchClassDetails();
-  }, []);
-
-  // Fetch attendance records whenever classDetails or date changes
-  useEffect(() => {
-    if (classDetails.classId && classDetails.classSection) {
-      fetchAttendance(date);
-    }
-  }, [classDetails, date]);
-
-  // Fetch attendance records (memoized for better performance)
-  const fetchAttendance = useCallback(
-    async (selectedDate) => {
-      const { classId, classSection } = classDetails;
-      if (!classId || !classSection) {
-        toast.warning("Class and section details are not available.");
+    const fetchAttendance = async () => {
+      if (!classId || !classSection || !date) {
+        toast.warning("Class, section, or date details are missing.");
         return;
       }
       setLoading(true);
       try {
         const { data, status } = await axiosInstance.get(
-          `/student/attendance/byClass/${classId}/${classSection}/date/${selectedDate}`
+          `/student/attendance/byClass/${classId}/${classSection}/date/${date}`
         );
         if (status === 200) {
           console.log("Attendance Records:", data);
@@ -73,9 +42,10 @@ const ViewStudentAttendanceByTeacher = () => {
       } finally {
         setLoading(false);
       }
-    },
-    [classDetails]
-  );
+    };
+
+    fetchAttendance();
+  }, [classId, classSection, date]);
 
   // Handle date change
   const handleDateChange = (event) => {
@@ -88,12 +58,32 @@ const ViewStudentAttendanceByTeacher = () => {
 
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Student Attendance</h1>
 
-      {/* Class and Section Details */}
-      <div className="mb-6">
-        <p className="text-lg text-gray-600">
-          <strong>Class:</strong> {classDetails.classId || "Loading..."}{" "}
-          <strong>Section:</strong> {classDetails.classSection || "Loading..."}
-        </p>
+      {/* Class and Section Selectors */}
+      <div className="flex gap-4 mb-4">
+        <select
+          value={classId}
+          onChange={(e) => setClassId(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg w-1/2"
+        >
+          {["Nursery", "LKG", "UKG", ...Array.from({ length: 10 }, (_, i) => (i + 1).toString())].map(
+            (option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            )
+          )}
+        </select>
+        <select
+          value={classSection}
+          onChange={(e) => setClassSection(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg w-1/2"
+        >
+          {["A", "B", "C"].map((section) => (
+            <option key={section} value={section}>
+              {section}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Date Picker */}
@@ -141,10 +131,12 @@ const ViewStudentAttendanceByTeacher = () => {
           </tbody>
         </table>
       ) : (
-        <p className="text-center text-gray-600">No attendance records found for the selected date.</p>
+        <p className="text-center text-gray-600">
+          No attendance records found for the selected date.
+        </p>
       )}
     </div>
   );
 };
 
-export default ViewStudentAttendanceByTeacher;
+export default AdminViewStudentAttendance;

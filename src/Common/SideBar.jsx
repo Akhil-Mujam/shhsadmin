@@ -36,9 +36,9 @@ const SideBar = ({ isSidebarOpen, toggleSidebar }) => {
       { title: "Circular", icon: <FaFolder />, path: "/circular" },
       { title: "Students", icon: <FaUserCircle />, path: "/student-details" },
       { title: "Teacher Details", icon: <FaUserCircle />, path: "/teacher-details" },
-      // { title: "Analytics", icon: <FaChartBar />, path: "/analytics" },
+       { title: "Uploading-Attendance", icon: <FaChartBar />, path: "/admin-attendance-upload-details" },
       { title: "Attendance", icon: <FaFolder />, path: "/view-attendance" },
-      { title: "Notifications", icon: <FaCog />, path: "/notifications" },
+      { title: "Fee", icon: <FaCog />, path: "/fee-details" },
     ],
     ClassTeacher: [
       { title: "View Attendance", icon: <FaFolder />, path: "/view-CT-attendance" },

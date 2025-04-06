@@ -1,9 +1,20 @@
 import React from 'react'
+import SubjectManager from '../Utils/SubjectManager'
+import ClassFees from '../Utils/ClassFees'
+import AdminViewStudentAttendance from '../Utils/AdminViewStudentAttendance'
 
 const DashBoard = () => {
   return (
+    <div>
+
+   
     <div className="flex justify-center items-center min-h-screen">
-      <h2 className="text-4xl font-bold text-center">Implementation is in Process</h2>
+      
+    <SubjectManager/>
+      <ClassFees/>
+      
+    </div>
+   
     </div>
   )
 }
