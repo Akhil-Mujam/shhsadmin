@@ -20,6 +20,10 @@ import StudentMarks from './Student/Components/StudentMarks'
 import DashBoard from './Admin/Components/DashBoard'
 import FeeDetails from './Admin/Components/FeeDetails'
 import AdminUploadAttendance from './Admin/Components/AdminUploadAttendance'
+import EventForm from './Admin/Utils/EventForm'
+import EventDetail from './Admin/Utils/EventDetail'
+import EventList from './Admin/Utils/EventList'
+import Events from './Admin/Components/Events'
 
 
 const App = () => {
@@ -42,6 +46,26 @@ const App = () => {
                 </ProtectedRoute>
               }
             >
+
+           
+               <Route
+              path="events/new"
+              element={
+                <ProtectedRoute>
+                  <EventForm/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="events/:id"
+              element={
+                <ProtectedRoute>
+                  <EventDetail/>
+                </ProtectedRoute>
+              }
+            />
+              
               {/* Admin Routes */}
               <Route
                 path="notifications"
@@ -63,7 +87,7 @@ const App = () => {
                 path="events"
                 element={
                   <ProtectedRoute requiredRole={["Admin"]}>
-                   <DashBoard/>
+                   <Events/>
                   </ProtectedRoute>
                 }
               />

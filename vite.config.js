@@ -8,6 +8,13 @@ export default defineConfig({
     outDir: 'dist', // Ensure the build output is in `dist`
   },
   server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:9090', // Your Spring Boot server
+        changeOrigin: true,
+        secure: false,
+      },
+    },
     port: 3000, // Match Railway's default
   },
 });
