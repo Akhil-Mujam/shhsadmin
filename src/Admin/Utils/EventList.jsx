@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import axiosInstance from "../../Common/axios";
 import { Link } from 'react-router-dom';
 
 function EventList() {
@@ -16,7 +16,7 @@ function EventList() {
     try {
 
       console.log("Fetching event details from get method before axios")
-      const res = await axios.get(`/api/events?page=${pageNumber}&size=${pageSize}`);
+      const res = await axiosInstance.get(`/api/events?page=${pageNumber}&size=${pageSize}`);
       console.log("Fetching event details from get method after axios")
       const newEvents = res.data.content || [];
       console.log(newEvents);

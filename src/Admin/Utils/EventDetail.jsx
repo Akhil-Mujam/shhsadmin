@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../Common/axios";
 
 const MAX_IMAGES_PER_EVENT = 20;
 
@@ -15,7 +15,7 @@ const EventDetail = () => {
 
   const fetchEvent = async () => {
     try {
-      const res = await axios.get(`/api/events/${id}`);
+      const res = await axiosInstance.get(`/api/events/${id}`);
       console.log("Event Detaill get method result data = "+res.data)
       setEvent(res.data);
     } catch (err) {
@@ -53,7 +53,7 @@ const EventDetail = () => {
     setUploading(true);
     setError("");
     try {
-      await axios.post(`/api/events/${id}/images`, formData, {
+      await axiosInstance.post(`/api/events/${id}/images`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setFiles([]);
@@ -72,7 +72,7 @@ const EventDetail = () => {
     if (!window.confirm("Are you sure you want to delete this image?")) return;
 
     try {
-      await axios.delete(`/api/events/images/${imageId}`);
+      await axiosInstance.delete(`/api/events/images/${imageId}`);
       console.log("delete image into the particular event ")
       await fetchEvent();
     } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../Common/axios";
 
 const EventForm = () => {
   const [event, setEvent] = useState({
@@ -37,7 +37,7 @@ const EventForm = () => {
     try {
 
       console.log("creating an event before axios ")
-      const res = await axios.post("/api/events", formData, {
+      const res = await axiosInstance.post("/api/events", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
