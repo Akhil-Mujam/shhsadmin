@@ -35,13 +35,17 @@ const EventForm = () => {
 
     setLoading(true);
     try {
+
+      console.log("creating an event before axios ")
       const res = await axios.post("/api/events", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log("Creating an event is tried")
       navigate(`/events/${res.data.id}`);
     } catch (err) {
+      console.log("creating an event catch block ")
       console.error("Failed to create event:", err);
       alert("Something went wrong. Please try again.");
     } finally {

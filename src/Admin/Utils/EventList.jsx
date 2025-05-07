@@ -14,9 +14,12 @@ function EventList() {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.get(`/api/events?page=${pageNumber}&size=${pageSize}`);
-      const newEvents = res.data.content || [];
 
+      console.log("Fetching event details from get method before axios")
+      const res = await axios.get(`/api/events?page=${pageNumber}&size=${pageSize}`);
+      console.log("Fetching event details from get method after axios")
+      const newEvents = res.data.content || [];
+      console.log(newEvents);
       setEvents((prev) => [...prev, ...newEvents]);
       setHasMore(!res.data.last);
     } catch (err) {

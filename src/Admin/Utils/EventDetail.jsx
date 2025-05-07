@@ -16,6 +16,7 @@ const EventDetail = () => {
   const fetchEvent = async () => {
     try {
       const res = await axios.get(`/api/events/${id}`);
+      console.log("Event Detaill get method result data = "+res.data)
       setEvent(res.data);
     } catch (err) {
       console.error("Failed to fetch event:", err);
@@ -56,9 +57,11 @@ const EventDetail = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setFiles([]);
+      console.log("uploading images into the particular event ")
       await fetchEvent();
     } catch (err) {
       console.error("Upload failed:", err);
+      console.log("catch block images into the particular event ")
       setError(err.response?.data?.message || "Failed to upload images.");
     } finally {
       setUploading(false);
@@ -70,6 +73,7 @@ const EventDetail = () => {
 
     try {
       await axios.delete(`/api/events/images/${imageId}`);
+      console.log("delete image into the particular event ")
       await fetchEvent();
     } catch (err) {
       console.error("Failed to delete image:", err);
