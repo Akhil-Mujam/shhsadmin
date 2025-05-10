@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../Common/axios";
 
 const EventForm = () => {
@@ -10,7 +10,31 @@ const EventForm = () => {
   });
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
+  const { eventId } = useParams(); // For edit mode
+
+  useEffect(() => {
+    if (eventId) {
+      // Editing mode
+      setIsEditMode(true);
+      fetchEventDetails();
+    }
+  }, [eventId]);
+
+  const fetchEventDetails = async () => {
+    try {
+      const res = await axiosInstance.get(`/api/events/${eventId}`);
+      setEvent({
+        name: res.data.name,
+        description: res.data.description,
+        eventDate: res.data.eventDate,
+      });
+    } catch (err) {
+      console.error("Failed to fetch event:", err);
+      alert("Failed to load event details.");
+    }
+  };
 
   const handleChange = (e) => {
     setEvent({ ...event, [e.target.name]: e.target.value });
@@ -22,31 +46,32 @@ const EventForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!thumbnail) {
-      alert("Please select a thumbnail image.");
-      return;
-    }
 
     const formData = new FormData();
     formData.append("name", event.name);
     formData.append("description", event.description);
     formData.append("eventDate", event.eventDate);
-    formData.append("thumbnail", thumbnail);
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);
+    }
 
     setLoading(true);
     try {
-
-      console.log("creating an event before axios ")
-      const res = await axiosInstance.post("/api/events", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("Creating an event is tried")
-      navigate(`/events/${res.data.id}`);
+      if (isEditMode) {
+        // Editing existing event
+        await axiosInstance.put(`/api/events/${eventId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        navigate(`/events/${eventId}`);
+      } else {
+        // Creating new event
+        const res = await axiosInstance.post("/api/events", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        navigate(`/events/${res.data.id}`);
+      }
     } catch (err) {
-      console.log("creating an event catch block ")
-      console.error("Failed to create event:", err);
+      console.error("Failed to submit event:", err);
       alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -62,7 +87,9 @@ const EventForm = () => {
         ← Back to Event List
       </button>
 
-      <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">Create New Event</h1>
+      <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">
+        {isEditMode ? "Edit Event" : "Create New Event"}
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
@@ -101,13 +128,16 @@ const EventForm = () => {
           />
         </div>
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Thumbnail Image</label>
+          <label className="block mb-1 font-medium text-gray-700">
+            {isEditMode ? "Change Thumbnail (optional)" : "Thumbnail Image"}
+          </label>
           <input
             type="file"
             accept="image/*"
             onChange={handleThumbnailChange}
             className="w-full"
-            required
+            // Not required in edit mode
+            required={!isEditMode}
           />
         </div>
         <button
@@ -117,7 +147,7 @@ const EventForm = () => {
             loading ? "bg-green-300" : "bg-blue-500 hover:bg-blue-700"
           } transition`}
         >
-          {loading ? "Creating..." : "Create Event"}
+          {loading ? (isEditMode ? "Updating..." : "Creating...") : isEditMode ? "Update Event" : "Create Event"}
         </button>
       </form>
     </div>

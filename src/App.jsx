@@ -57,6 +57,8 @@ const App = () => {
               }
             />
 
+<Route path="/events/edit/:eventId" element={<ProtectedRoute><EventForm /></ProtectedRoute>} />
+
             <Route
               path="events/:id"
               element={

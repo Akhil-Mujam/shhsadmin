@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axiosInstance from "../../Common/axios";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function EventList() {
   const [events, setEvents] = useState([]);
@@ -8,18 +8,15 @@ function EventList() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const pageSize = 6;
-  const initialLoad = useRef(true); // To prevent double-fetch on mount
+  const initialLoad = useRef(true);
+  const navigate = useNavigate();
 
   const fetchEvents = async (pageNumber) => {
     if (loading) return;
     setLoading(true);
     try {
-
-      console.log("Fetching event details from get method before axios")
       const res = await axiosInstance.get(`/api/events?page=${pageNumber}&size=${pageSize}`);
-      console.log("Fetching event details from get method after axios")
       const newEvents = res.data.content || [];
-      console.log(newEvents);
       setEvents((prev) => [...prev, ...newEvents]);
       setHasMore(!res.data.last);
     } catch (err) {
@@ -29,8 +26,19 @@ function EventList() {
     }
   };
 
+  const deleteEvent = async (eventId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this event?");
+    if (!confirmed) return;
+
+    try {
+      await axiosInstance.delete(`/api/events/${eventId}`);
+      setEvents((prev) => prev.filter(event => event.id !== eventId));
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
+  };
+
   useEffect(() => {
-    // Avoid double fetch on initial render
     if (initialLoad.current) {
       initialLoad.current = false;
       fetchEvents(page);
@@ -51,7 +59,7 @@ function EventList() {
         </h1>
         <Link
           to="/events/new"
-          className="bg-green-600 text-white text-sm sm:text-base font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg shadow hover:bg-green-700 transition duration-200"
+          className="border border-green-600 bg-green-600 text-white text-sm sm:text-base font-semibold px-5 py-2 rounded-full hover:bg-white hover:text-green-700 transition-all duration-300 shadow"
         >
           + Create Event
         </Link>
@@ -61,42 +69,61 @@ function EventList() {
         <p className="text-center text-gray-500 text-lg">No events available at the moment.</p>
       ) : (
         <>
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => (
-              <Link
-                to={`/events/${event.id}`}
+              <div
                 key={event.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden"
+                className="bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden flex flex-col"
               >
                 {event.thumbnailUrl && (
                   <img
                     src={event.thumbnailUrl}
                     alt={event.name}
                     loading="lazy"
-                    className="w-full h-48 object-cover"
+                    className="w-full h-52 object-cover"
                   />
                 )}
-                <div className="p-5 flex flex-col justify-between h-full">
+                <div className="p-6 flex flex-col justify-between h-full flex-1">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-semibold text-blue-700 mb-2 line-clamp-1">
+                    <h2 className="text-xl sm:text-2xl font-bold text-blue-800 mb-2 line-clamp-1">
                       {event.name}
                     </h2>
                     <p className="text-sm sm:text-base text-gray-600 line-clamp-3">
                       {event.description}
                     </p>
+                    <p className="text-xs text-gray-400 mt-2">📅 {event.eventDate}</p>
                   </div>
-                  <p className="text-xs text-gray-400 mt-4">📅 {event.eventDate}</p>
+                  <div className="mt-5 flex justify-between gap-2">
+                    <Link
+                      to={`/events/${event.id}`}
+                      className="border border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white px-3 py-1 rounded-full text-sm transition-all"
+                    >
+                      View
+                    </Link>
+                    <button
+                      onClick={() => navigate(`/events/edit/${event.id}`)}
+                      className="border border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white px-3 py-1 rounded-full text-sm transition-all"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteEvent(event.id)}
+                      className="border border-red-500 text-red-600 hover:bg-red-500 hover:text-white px-3 py-1 rounded-full text-sm transition-all"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
           {hasMore && (
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-10">
               <button
                 onClick={handleViewMore}
                 disabled={loading}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-blue-700 transition"
+                className="border border-blue-600 bg-blue-600 text-white px-6 py-2 rounded-full text-sm sm:text-base font-semibold hover:bg-white hover:text-blue-700 transition-all duration-300"
               >
                 {loading ? 'Loading...' : 'View More'}
               </button>
