@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
-  // baseURL: 'https://demohsbackend-production.up.railway.app', // Replace with your backend URL
-  baseURL: 'http://localhost:9090',
+  baseURL: 'https://demohsbackend-production.up.railway.app', // Replace with your backend URL
+  // baseURL: 'http://localhost:9090',
   withCredentials: true, // Allows cookies to be sent with requests
 });
 
